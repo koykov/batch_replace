@@ -8,7 +8,7 @@ type BatchReplacePool struct {
 }
 
 // Default instance of the pool.
-// Just use cbytealg.BatchPool.Get() and cbytealg.BatchPool.Put().
+// Just use batch_replace.BatchPool.Get() and batch_replace.BatchPool.Put().
 var BatchPool BatchReplacePool
 
 // Get old or create new instance of the batch replacer.

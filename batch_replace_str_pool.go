@@ -10,7 +10,7 @@ type BatchReplaceStrPool struct {
 }
 
 // Default instance of the pool.
-// Just use cbytealg.BatchStrPool.Get() and cbytealg.BatchStrPool.Put().
+// Just use batch_replace.BatchStrPool.Get() and batch_replace.BatchStrPool.Put().
 var BatchStrPool BatchReplaceStrPool
 
 // Get old or create new instance of the batch string replacer.
