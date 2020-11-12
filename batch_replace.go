@@ -146,6 +146,13 @@ func (r *BatchReplace) Commit() []byte {
 	return r.dst[:l]
 }
 
+// Perform the replaces and return copy of result.
+//
+// Made to avoid data sharing.
+func (r *BatchReplace) CommitCopy() []byte {
+	return append([]byte(nil), r.Commit()...)
+}
+
 // Clear the replacer with keeping of allocated space to reuse.
 func (r *BatchReplace) Reset() {
 	r.src = r.src[:0]

@@ -68,6 +68,11 @@ func (r *BatchReplaceStr) Commit() string {
 	return fc.B2S(r.r.Commit())
 }
 
+// Perform the replaces and return copy of result.
+func (r *BatchReplaceStr) CommitCopy() string {
+	return fc.B2S(r.r.CommitCopy())
+}
+
 // Clear the replacer with keeping of allocated space to reuse.
 func (r *BatchReplaceStr) Reset() {
 	r.r.Reset()
