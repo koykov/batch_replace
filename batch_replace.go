@@ -3,6 +3,8 @@ package batch_replace
 import (
 	"bytes"
 	"strconv"
+
+	"github.com/koykov/fastconv"
 )
 
 const (
@@ -76,6 +78,11 @@ func (r *BatchReplace) Replace(old []byte, new []byte) *BatchReplace {
 	r.old.add(old, n)
 	r.new.add(new, n)
 	return r
+}
+
+// Register new string replacement.
+func (r *BatchReplace) ReplaceStr(old, new string) *BatchReplace {
+	return r.Replace(fastconv.S2B(old), fastconv.S2B(new))
 }
 
 // Register int replacement.
