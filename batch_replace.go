@@ -56,13 +56,15 @@ func NewBatchReplace(s []byte) *BatchReplace {
 // Set the source.
 //
 // For use outside of pools.
-func (r *BatchReplace) SetSrc(src []byte) {
+func (r *BatchReplace) SetSrc(src []byte) *BatchReplace {
 	r.src = append(r.src[:0], src...)
+	return r
 }
 
 // Set the source using string.
-func (r *BatchReplace) SetSrcStr(src string) {
+func (r *BatchReplace) SetSrcStr(src string) *BatchReplace {
 	r.src = append(r.src[:0], src...)
+	return r
 }
 
 // Register new byte slice replacement.
@@ -159,7 +161,7 @@ func (r *BatchReplace) CommitCopy() []byte {
 }
 
 // Clear the replacer with keeping of allocated space to reuse.
-func (r *BatchReplace) Reset() {
+func (r *BatchReplace) Reset() *BatchReplace {
 	r.src = r.src[:0]
 	for i := 0; i < len(r.old.queue); i++ {
 		r.old.queue[i] = r.old.queue[i][:0]
@@ -167,6 +169,7 @@ func (r *BatchReplace) Reset() {
 		r.new.queue[i] = r.new.queue[i][:0]
 		r.new.idx, r.new.acc = 0, 0
 	}
+	return r
 }
 
 // Add new item to queue.
