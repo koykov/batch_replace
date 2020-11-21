@@ -60,6 +60,11 @@ func (r *BatchReplace) SetSrc(src []byte) {
 	r.src = append(r.src[:0], src...)
 }
 
+// Set the source using string.
+func (r *BatchReplace) SetSrcStr(src string) {
+	r.src = append(r.src[:0], src...)
+}
+
 // Register new byte slice replacement.
 func (r *BatchReplace) Replace(old []byte, new []byte) *BatchReplace {
 	n := bytes.Count(r.src, old)
