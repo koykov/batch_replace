@@ -167,6 +167,16 @@ func (r *BatchReplace) CommitCopy() []byte {
 	return append([]byte(nil), r.Commit()...)
 }
 
+// String version of Commit().
+func (r *BatchReplace) CommitStr() string {
+	return fastconv.B2S(r.Commit())
+}
+
+// String version of CommitCopy().
+func (r *BatchReplace) CommitCopyStr() string {
+	return fastconv.B2S(r.CommitCopy())
+}
+
 // Clear the replacer with keeping of allocated space to reuse.
 func (r *BatchReplace) Reset() *BatchReplace {
 	r.src = r.src[:0]
