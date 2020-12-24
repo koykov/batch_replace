@@ -28,3 +28,13 @@ func (p *BatchReplacePool) Put(r *BatchReplace) {
 	r.Reset()
 	p.p.Put(r)
 }
+
+// Get replacer from default pool.
+func (p *BatchReplacePool) Acquire(s []byte) *BatchReplace {
+	return BatchPool.Get(s)
+}
+
+// Put replacer back to default pool.
+func (p *BatchReplacePool) Release(x *BatchReplace) {
+	BatchPool.Put(x)
+}
