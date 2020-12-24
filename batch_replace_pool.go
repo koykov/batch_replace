@@ -1,6 +1,10 @@
 package batch_replace
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/koykov/fastconv"
+)
 
 // Pool to store batch replacers.
 type BatchReplacePool struct {
@@ -32,6 +36,11 @@ func (p *BatchReplacePool) Put(r *BatchReplace) {
 // Get replacer from default pool.
 func (p *BatchReplacePool) Acquire(s []byte) *BatchReplace {
 	return BatchPool.Get(s)
+}
+
+// Get replacer from default pool and set string as a source.
+func (p *BatchReplacePool) SAcquire(s string) *BatchReplace {
+	return BatchPool.Get(fastconv.S2B(s))
 }
 
 // Put replacer back to default pool.
