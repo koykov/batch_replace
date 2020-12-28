@@ -225,18 +225,6 @@ func (r *BatchReplace) Commit() []byte {
 	return r.indirect(r.dst)[:l]
 }
 
-func (r *BatchReplace) replaceTo(dst, s, old, new []byte, n int) []byte {
-	start := 0
-	for i := 0; i < n; i++ {
-		j := start + bytes.Index(s[start:], old)
-		dst = append(dst, s[start:j]...)
-		dst = append(dst, new...)
-		start = j + len(old)
-	}
-	dst = append(dst, s[start:]...)
-	return dst
-}
-
 // Perform the replaces and return copy of result.
 //
 // Made to avoid data sharing.
@@ -283,10 +271,25 @@ func (r *BatchReplace) Reset() *BatchReplace {
 	return r
 }
 
+// Replace old to new in s and apply the result to dst.
+func (r *BatchReplace) replaceTo(dst, s, old, new []byte, n int) []byte {
+	start := 0
+	for i := 0; i < n; i++ {
+		j := start + bytes.Index(s[start:], old)
+		dst = append(dst, s[start:j]...)
+		dst = append(dst, new...)
+		start = j + len(old)
+	}
+	dst = append(dst, s[start:]...)
+	return dst
+}
+
+// Get byte slice according byte pointer.
 func (r *BatchReplace) indirect(p byteptr) []byte {
 	return r.buf[p.offset() : p.offset()+p.len()]
 }
 
+// Alloc more space (or use exiting) in buffer and return corresponding byte pointer.
 func (r *BatchReplace) alloc(b []byte) (p byteptr) {
 	c := r.off
 	l := len(b)
