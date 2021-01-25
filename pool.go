@@ -22,7 +22,7 @@ func (p *Pool) Get(s []byte) *BatchReplace {
 	v := p.p.Get()
 	if v != nil {
 		if r, ok := v.(*BatchReplace); ok {
-			r.SetSrc(s)
+			r.SetSrcBytes(s)
 			return r
 		}
 	}
@@ -41,7 +41,7 @@ func Acquire(s []byte) *BatchReplace {
 }
 
 // Get replacer from default pool and set string as a source.
-func SAcquire(s string) *BatchReplace {
+func AcquireStr(s string) *BatchReplace {
 	return P.Get(fastconv.S2B(s))
 }
 

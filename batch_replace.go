@@ -59,27 +59,27 @@ func NewBatchReplace(s []byte) *BatchReplace {
 		old: o,
 		new: n,
 	}
-	r.SetSrc(s)
+	r.SetSrcBytes(s)
 	return &r
 }
 
 // Set the source.
 //
 // For use outside of pools.
-func (r *BatchReplace) SetSrc(src []byte) *BatchReplace {
+func (r *BatchReplace) SetSrcBytes(src []byte) *BatchReplace {
 	r.buf = append(r.buf[:0], src...)
 	r.src.set(r.off, len(src))
 	r.off = len(src)
 	return r
 }
 
-// Set the source using string.
+// Set the source as string.
 func (r *BatchReplace) SetSrcStr(src string) *BatchReplace {
-	return r.SetSrc(fastconv.S2B(src))
+	return r.SetSrcBytes(fastconv.S2B(src))
 }
 
-// Register new bytes replacement.
-func (r *BatchReplace) Replace(old []byte, new []byte) *BatchReplace {
+// Register new bytes to bytes replacement.
+func (r *BatchReplace) BytesToBytes(old []byte, new []byte) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 {
 		return r
@@ -89,29 +89,33 @@ func (r *BatchReplace) Replace(old []byte, new []byte) *BatchReplace {
 	return r
 }
 
-// Register new string replacement.
-// todo remove it due to SReplace() method.
-func (r *BatchReplace) ReplaceStr(old, new string) *BatchReplace {
-	return r.Replace(fastconv.S2B(old), fastconv.S2B(new))
+// Register new bytes to bytes to string replacement.
+func (r *BatchReplace) BytesToStr(old []byte, new string) *BatchReplace {
+	return r.BytesToBytes(old, fastconv.S2B(new))
 }
 
-// Register new string replacement.
-func (r *BatchReplace) SReplace(old, new string) *BatchReplace {
-	return r.Replace(fastconv.S2B(old), fastconv.S2B(new))
+// Register new string to string replacement.
+func (r *BatchReplace) StrToStr(old, new string) *BatchReplace {
+	return r.BytesToBytes(fastconv.S2B(old), fastconv.S2B(new))
 }
 
-// Register bytes-int replacement.
-func (r *BatchReplace) ReplaceInt(old []byte, new int64) *BatchReplace {
-	return r.ReplaceIntBase(old, new, 10)
+// Register new bytes to string to bytes replacement.
+func (r *BatchReplace) StrToBytes(old string, new []byte) *BatchReplace {
+	return r.BytesToBytes(fastconv.S2B(old), new)
 }
 
-// Register string-int replacement.
-func (r *BatchReplace) SReplaceInt(old string, new int64) *BatchReplace {
-	return r.SReplaceIntBase(old, new, 10)
+// Register bytes to int replacement.
+func (r *BatchReplace) BytesToInt(old []byte, new int64) *BatchReplace {
+	return r.BytesToIntBase(old, new, 10)
 }
 
-// Register bytes-int replacement with given base.
-func (r *BatchReplace) ReplaceIntBase(old []byte, new int64, base int) *BatchReplace {
+// Register string to int replacement.
+func (r *BatchReplace) StrToInt(old string, new int64) *BatchReplace {
+	return r.StrToIntBase(old, new, 10)
+}
+
+// Register bytes to int replacement with given base.
+func (r *BatchReplace) BytesToIntBase(old []byte, new int64, base int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 || base < baseLo || base > baseHi {
 		return r
@@ -129,23 +133,23 @@ func (r *BatchReplace) ReplaceIntBase(old []byte, new int64, base int) *BatchRep
 	return r
 }
 
-// Register string-int replacement with given base.
-func (r *BatchReplace) SReplaceIntBase(old string, new int64, base int) *BatchReplace {
-	return r.ReplaceIntBase(fastconv.S2B(old), new, base)
+// Register string to int replacement with given base.
+func (r *BatchReplace) StrToIntBase(old string, new int64, base int) *BatchReplace {
+	return r.BytesToIntBase(fastconv.S2B(old), new, base)
 }
 
-// Register bytes-uint replacement.
-func (r *BatchReplace) ReplaceUint(old []byte, new uint64) *BatchReplace {
-	return r.ReplaceUintBase(old, new, 10)
+// Register bytes to uint replacement.
+func (r *BatchReplace) BytesToUint(old []byte, new uint64) *BatchReplace {
+	return r.BytesToUintBase(old, new, 10)
 }
 
-// Register string-uint replacement.
-func (r *BatchReplace) SReplaceUint(old string, new uint64) *BatchReplace {
-	return r.SReplaceUintBase(old, new, 10)
+// Register string to uint replacement.
+func (r *BatchReplace) StrToUint(old string, new uint64) *BatchReplace {
+	return r.StrToUintBase(old, new, 10)
 }
 
-// Register bytes-uint replacement with given base.
-func (r *BatchReplace) ReplaceUintBase(old []byte, new uint64, base int) *BatchReplace {
+// Register bytes to uint replacement with given base.
+func (r *BatchReplace) BytesToUintBase(old []byte, new uint64, base int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 || base < baseLo || base > baseHi {
 		return r
@@ -163,23 +167,23 @@ func (r *BatchReplace) ReplaceUintBase(old []byte, new uint64, base int) *BatchR
 	return r
 }
 
-// Register string-uint replacement with given base.
-func (r *BatchReplace) SReplaceUintBase(old string, new uint64, base int) *BatchReplace {
-	return r.ReplaceUintBase(fastconv.S2B(old), new, base)
+// Register string to uint replacement with given base.
+func (r *BatchReplace) StrToUintBase(old string, new uint64, base int) *BatchReplace {
+	return r.BytesToUintBase(fastconv.S2B(old), new, base)
 }
 
-// Register bytes-float replacement.
-func (r *BatchReplace) ReplaceFloat(old []byte, new float64) *BatchReplace {
-	return r.ReplaceFloatTunable(old, new, 'f', -1, 64)
+// Register bytes to float replacement.
+func (r *BatchReplace) BytesToFloat(old []byte, new float64) *BatchReplace {
+	return r.BytesToFloatTunable(old, new, 'f', -1, 64)
 }
 
-// Register string-float replacement.
-func (r *BatchReplace) SReplaceFloat(old string, new float64) *BatchReplace {
-	return r.SReplaceFloatTunable(old, new, 'f', -1, 64)
+// Register string to float replacement.
+func (r *BatchReplace) StrToFloat(old string, new float64) *BatchReplace {
+	return r.StrToFloatTunable(old, new, 'f', -1, 64)
 }
 
-// Register bytes-float replacement with params.
-func (r *BatchReplace) ReplaceFloatTunable(old []byte, new float64, fmt byte, prec, bitSize int) *BatchReplace {
+// Register bytes to float replacement with params.
+func (r *BatchReplace) BytesToFloatTunable(old []byte, new float64, fmt byte, prec, bitSize int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 {
 		return r
@@ -197,9 +201,9 @@ func (r *BatchReplace) ReplaceFloatTunable(old []byte, new float64, fmt byte, pr
 	return r
 }
 
-// Register string-float replacement with params.
-func (r *BatchReplace) SReplaceFloatTunable(old string, new float64, fmt byte, prec, bitSize int) *BatchReplace {
-	return r.ReplaceFloatTunable(fastconv.S2B(old), new, fmt, prec, bitSize)
+// Register string to float replacement with params.
+func (r *BatchReplace) StrToFloatTunable(old string, new float64, fmt byte, prec, bitSize int) *BatchReplace {
+	return r.BytesToFloatTunable(fastconv.S2B(old), new, fmt, prec, bitSize)
 }
 
 // Perform the replaces.
@@ -233,24 +237,12 @@ func (r *BatchReplace) CommitCopy() []byte {
 }
 
 // String version of Commit().
-// todo remove it due to SCommit() method.
 func (r *BatchReplace) CommitStr() string {
 	return fastconv.B2S(r.Commit())
 }
 
-// String version of Commit().
-func (r *BatchReplace) SCommit() string {
-	return fastconv.B2S(r.Commit())
-}
-
 // String version of CommitCopy().
-// todo remove it due to SCommitCopy() method.
 func (r *BatchReplace) CommitCopyStr() string {
-	return fastconv.B2S(r.CommitCopy())
-}
-
-// String version of CommitCopy().
-func (r *BatchReplace) SCommitCopy() string {
 	return fastconv.B2S(r.CommitCopy())
 }
 

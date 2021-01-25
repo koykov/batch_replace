@@ -29,10 +29,10 @@ var (
 
 func TestBatchReplace_Replace(t *testing.T) {
 	n := NewBatchReplace(breplOrigin).
-		Replace(brTag0, brTag0Val).
-		Replace(brTag1, brTag1Val).
-		ReplaceFloat(brTag2, 1234567.0987654321).
-		ReplaceInt(brTag3, int64(4)).
+		BytesToBytes(brTag0, brTag0Val).
+		BytesToBytes(brTag1, brTag1Val).
+		BytesToFloat(brTag2, 1234567.0987654321).
+		BytesToInt(brTag3, int64(4)).
 		Commit()
 	if !bytes.Equal(n, breplExpect) {
 		t.Error("BatchReplace: mismatch result and expectation")
@@ -42,11 +42,11 @@ func TestBatchReplace_Replace(t *testing.T) {
 func TestBatchReplaceStr_Replace(t *testing.T) {
 	n := NewBatchReplace(nil).
 		SetSrcStr("foo {tag0} bar {tag1} string {macro} with {cnt} tags").
-		SReplace("{tag0}", "s0").
-		SReplace("{tag1}", "long string").
-		SReplaceFloat("{macro}", float64(1234567.0987654321)).
-		SReplaceInt("{cnt}", int64(4)).
-		SCommit()
+		StrToStr("{tag0}", "s0").
+		StrToStr("{tag1}", "long string").
+		StrToFloat("{macro}", 1234567.0987654321).
+		StrToInt("{cnt}", int64(4)).
+		CommitStr()
 	if n != breplExpectS {
 		t.Error("BatchReplace: mismatch string result and expectation")
 	}
@@ -56,10 +56,10 @@ func BenchmarkBatchReplace_Replace(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		r := Acquire(breplOrigin)
-		n := r.Replace(brTag0, brTag0Val).
-			Replace(brTag1, brTag1Val).
-			ReplaceFloat(brTag2, 1234567.0987654321).
-			ReplaceInt(brTag3, int64(4)).
+		n := r.BytesToBytes(brTag0, brTag0Val).
+			BytesToBytes(brTag1, brTag1Val).
+			BytesToFloat(brTag2, 1234567.0987654321).
+			BytesToInt(brTag3, int64(4)).
 			Commit()
 		if !bytes.Equal(n, breplExpect) {
 			b.Error("BatchReplace: mismatch result and expectation")
@@ -84,11 +84,11 @@ func BenchmarkBatchReplaceNative_Replace(b *testing.B) {
 func BenchmarkBatchReplaceStr_Replace(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		r := SAcquire(breplOriginS)
-		n := r.SReplace(brTag0S, brTag0ValS).
-			SReplace(brTag1S, brTag1ValS).
-			SReplaceFloat(brTag2S, float64(1234567.0987654321)).
-			SReplaceInt(brTag3S, int64(4)).
+		r := AcquireStr(breplOriginS)
+		n := r.StrToStr(brTag0S, brTag0ValS).
+			StrToStr(brTag1S, brTag1ValS).
+			StrToFloat(brTag2S, 1234567.0987654321).
+			StrToInt(brTag3S, int64(4)).
 			CommitStr()
 		if n != breplExpectS {
 			b.Error("BatchReplace: mismatch string result and expectation")
