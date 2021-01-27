@@ -55,7 +55,7 @@ func TestBatchReplaceStr_Replace(t *testing.T) {
 func BenchmarkBatchReplace_Replace(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		r := Acquire(breplOrigin)
+		r := AcquireWithBytesSrc(breplOrigin)
 		n := r.BytesToBytes(brTag0, brTag0Val).
 			BytesToBytes(brTag1, brTag1Val).
 			BytesToFloat(brTag2, 1234567.0987654321).
@@ -84,7 +84,7 @@ func BenchmarkBatchReplaceNative_Replace(b *testing.B) {
 func BenchmarkBatchReplaceStr_Replace(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		r := AcquireStr(breplOriginS)
+		r := AcquireWithStrSrc(breplOriginS)
 		n := r.StrToStr(brTag0S, brTag0ValS).
 			StrToStr(brTag1S, brTag1ValS).
 			StrToFloat(brTag2S, 1234567.0987654321).
