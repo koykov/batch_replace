@@ -212,7 +212,7 @@ func (r *BatchReplace) Commit() []byte {
 	bl := r.src.len() + r.new.acc
 	l := bl - r.old.acc
 
-	r.buf = bytealg.GrowDelta(r.buf, bl*2)
+	r.buf = bytealg.GrowDelta(r.buf, r.off+bl*2)
 	r.dst.set(r.off, bl)
 	dst := r.indirect(r.dst)
 	copy(dst, r.indirect(r.src))

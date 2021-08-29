@@ -25,6 +25,8 @@ var (
 	brTag1ValS   = "long string"
 	brTag2S      = "{macro}"
 	brTag3S      = "{cnt}"
+
+	breplAllocS = "Balance of !user: !val !cur"
 )
 
 func TestBatchReplace_Replace(t *testing.T) {
@@ -107,5 +109,20 @@ func BenchmarkBatchReplaceStrNative_Replace(b *testing.B) {
 		if n != breplExpectS {
 			b.Error("BatchReplaceStr: mismatch result and expectation")
 		}
+	}
+}
+
+func BenchmarkBatchReplaceAvoidAlloc(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		r := AcquireWithStrSrc(breplAllocS)
+		n := r.StrToStr("!user", "John Ruth").
+			StrToStr("!val", "8000").
+			StrToStr("!cur", "USD").
+			CommitStr()
+		if n != "Balance of John Ruth: 8000 USD" {
+			b.Error("BatchReplace + avoid alloc: mismatch string result and expectation")
+		}
+		Release(r)
 	}
 }
