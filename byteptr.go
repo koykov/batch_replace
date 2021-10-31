@@ -6,6 +6,12 @@ type byteptr struct {
 	o, l int
 }
 
+// Byteptr struct with number of replacements.
+type byteptrn struct {
+	p byteptr
+	n int
+}
+
 // Set offset and length.
 func (p *byteptr) set(o, l int) {
 	p.o, p.l = o, l
