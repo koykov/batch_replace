@@ -14,7 +14,7 @@ const (
 	baseHi = 36
 )
 
-// Replacer.
+// BatchReplace is a tool to collect replacement pairs and apply them once..
 type BatchReplace struct {
 	// Common buffer to store all bytes data.
 	// Data is allocating the following:
@@ -33,7 +33,7 @@ type BatchReplace struct {
 	new queue
 }
 
-// Init new replacer.
+// NewBatchReplace inits new replacer.
 func NewBatchReplace(s []byte) *BatchReplace {
 	o := queue{queue: make([]byteptrn, 0)}
 	n := queue{queue: make([]byteptrn, 0)}
@@ -45,7 +45,7 @@ func NewBatchReplace(s []byte) *BatchReplace {
 	return &r
 }
 
-// Set the source.
+// SetSrcBytes set the source as bytes.
 //
 // For use outside of pools.
 func (r *BatchReplace) SetSrcBytes(src []byte) *BatchReplace {
@@ -55,12 +55,12 @@ func (r *BatchReplace) SetSrcBytes(src []byte) *BatchReplace {
 	return r
 }
 
-// Set the source as string.
+// SetSrcStr set the source as string.
 func (r *BatchReplace) SetSrcStr(src string) *BatchReplace {
 	return r.SetSrcBytes(fastconv.S2B(src))
 }
 
-// Register new bytes to bytes replacement.
+// BytesToBytes registers new bytes to bytes replacement.
 func (r *BatchReplace) BytesToBytes(old []byte, new []byte) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 {
@@ -71,32 +71,32 @@ func (r *BatchReplace) BytesToBytes(old []byte, new []byte) *BatchReplace {
 	return r
 }
 
-// Register new bytes to bytes to string replacement.
+// BytesToStr registers new bytes to bytes to string replacement.
 func (r *BatchReplace) BytesToStr(old []byte, new string) *BatchReplace {
 	return r.BytesToBytes(old, fastconv.S2B(new))
 }
 
-// Register new string to string replacement.
+// StrToStr registers new string to string replacement.
 func (r *BatchReplace) StrToStr(old, new string) *BatchReplace {
 	return r.BytesToBytes(fastconv.S2B(old), fastconv.S2B(new))
 }
 
-// Register new bytes to string to bytes replacement.
+// StrToBytes registers new bytes to string to bytes replacement.
 func (r *BatchReplace) StrToBytes(old string, new []byte) *BatchReplace {
 	return r.BytesToBytes(fastconv.S2B(old), new)
 }
 
-// Register bytes to int replacement.
+// BytesToInt registers bytes to int replacement.
 func (r *BatchReplace) BytesToInt(old []byte, new int64) *BatchReplace {
 	return r.BytesToIntBase(old, new, 10)
 }
 
-// Register string to int replacement.
+// StrToInt segisters string to int replacement.
 func (r *BatchReplace) StrToInt(old string, new int64) *BatchReplace {
 	return r.StrToIntBase(old, new, 10)
 }
 
-// Register bytes to int replacement with given base.
+// BytesToIntBase registers bytes to int replacement with given base.
 func (r *BatchReplace) BytesToIntBase(old []byte, new int64, base int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 || base < baseLo || base > baseHi {
@@ -115,22 +115,22 @@ func (r *BatchReplace) BytesToIntBase(old []byte, new int64, base int) *BatchRep
 	return r
 }
 
-// Register string to int replacement with given base.
+// StrToIntBase registers string to int replacement with given base.
 func (r *BatchReplace) StrToIntBase(old string, new int64, base int) *BatchReplace {
 	return r.BytesToIntBase(fastconv.S2B(old), new, base)
 }
 
-// Register bytes to uint replacement.
+// BytesToUint registers bytes to uint replacement.
 func (r *BatchReplace) BytesToUint(old []byte, new uint64) *BatchReplace {
 	return r.BytesToUintBase(old, new, 10)
 }
 
-// Register string to uint replacement.
+// StrToUint registers string to uint replacement.
 func (r *BatchReplace) StrToUint(old string, new uint64) *BatchReplace {
 	return r.StrToUintBase(old, new, 10)
 }
 
-// Register bytes to uint replacement with given base.
+// BytesToUintBase registers bytes to uint replacement with given base.
 func (r *BatchReplace) BytesToUintBase(old []byte, new uint64, base int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 || base < baseLo || base > baseHi {
@@ -149,22 +149,22 @@ func (r *BatchReplace) BytesToUintBase(old []byte, new uint64, base int) *BatchR
 	return r
 }
 
-// Register string to uint replacement with given base.
+// StrToUintBase registers string to uint replacement with given base.
 func (r *BatchReplace) StrToUintBase(old string, new uint64, base int) *BatchReplace {
 	return r.BytesToUintBase(fastconv.S2B(old), new, base)
 }
 
-// Register bytes to float replacement.
+// BytesToFloat registers bytes to float replacement.
 func (r *BatchReplace) BytesToFloat(old []byte, new float64) *BatchReplace {
 	return r.BytesToFloatTunable(old, new, 'f', -1, 64)
 }
 
-// Register string to float replacement.
+// StrToFloat registers string to float replacement.
 func (r *BatchReplace) StrToFloat(old string, new float64) *BatchReplace {
 	return r.StrToFloatTunable(old, new, 'f', -1, 64)
 }
 
-// Register bytes to float replacement with params.
+// BytesToFloatTunable registers bytes to float replacement with params.
 func (r *BatchReplace) BytesToFloatTunable(old []byte, new float64, fmt byte, prec, bitSize int) *BatchReplace {
 	n := bytes.Count(r.indirect(r.src), old)
 	if n == 0 {
@@ -183,12 +183,12 @@ func (r *BatchReplace) BytesToFloatTunable(old []byte, new float64, fmt byte, pr
 	return r
 }
 
-// Register string to float replacement with params.
+// StrToFloatTunable registers string to float replacement with params.
 func (r *BatchReplace) StrToFloatTunable(old string, new float64, fmt byte, prec, bitSize int) *BatchReplace {
 	return r.BytesToFloatTunable(fastconv.S2B(old), new, fmt, prec, bitSize)
 }
 
-// Perform the replaces.
+// Commit applies all registered replacement pairs.
 func (r *BatchReplace) Commit() []byte {
 	// Calculate final length.
 	bl := r.src.len() + r.new.acc
@@ -211,24 +211,25 @@ func (r *BatchReplace) Commit() []byte {
 	return r.indirect(r.dst)[:l]
 }
 
-// Perform the replaces and return copy of result.
+// CommitCopy perform the replaces and return copy of result.
 //
 // Made to avoid data sharing.
+// See Commit.
 func (r *BatchReplace) CommitCopy() []byte {
 	return append([]byte(nil), r.Commit()...)
 }
 
-// String version of Commit().
+// CommitStr is a string version of Commit().
 func (r *BatchReplace) CommitStr() string {
 	return fastconv.B2S(r.Commit())
 }
 
-// String version of CommitCopy().
+// CommitCopyStr os a string version of CommitCopy().
 func (r *BatchReplace) CommitCopyStr() string {
 	return fastconv.B2S(r.CommitCopy())
 }
 
-// Clear the replacer with keeping of allocated space to reuse.
+// Reset clears the replacer with keeping of allocated space to reuse.
 func (r *BatchReplace) Reset() *BatchReplace {
 	r.buf = r.buf[:0]
 	r.off = 0

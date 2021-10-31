@@ -39,7 +39,7 @@ func (p *Pool) Put(r *BatchReplace) {
 	p.p.Put(r)
 }
 
-// Get replacer from default pool.
+// Acquire gets replacer from default pool.
 //
 // Please note, this method doesn't provide source for replacer and you need to specify it manually by calling
 // SetSrcBytes() and SetSrcStr() methods.
@@ -47,17 +47,17 @@ func Acquire() *BatchReplace {
 	return p.Get(nil)
 }
 
-// Get replacer from default pool and set byte array as a source.
+// AcquireWithBytesSrc gets replacer from default pool and set byte array as a source.
 func AcquireWithBytesSrc(src []byte) *BatchReplace {
 	return p.Get(src)
 }
 
-// Get replacer from default pool and set string as a source.
+// AcquireWithStrSrc gets replacer from default pool and set string as a source.
 func AcquireWithStrSrc(src string) *BatchReplace {
 	return p.Get(fastconv.S2B(src))
 }
 
-// Put replacer back to default pool.
+// Release puts replacer back to default pool.
 func Release(x *BatchReplace) {
 	p.Put(x)
 }
