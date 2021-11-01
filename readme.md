@@ -13,13 +13,13 @@ expectStr := "this WAS a string that contains 'very long substring', 1234567890,
 
 // Use pool instead of direct using of NewBatchReplace() or NewBatchReplaceStr().
 // Pool may help you to get zero allocations on long distance and under high load.
-r := batch_replace.SAcquire(originalStr)
+r := batch_replace.AcquireWithStrSrc(originalStr)
 defer batch_replace.Release(r)
-res := r.Replace("IS", "WAS").
-    Replace("{tag0}", "'very long substring'").
-    ReplaceInt("{tag1}", int64(1234567890)).
-    ReplaceFloat("tag2", float64(154.195628217573)).
-    Replace("#s", "etc...").
+res := r.StrToStr("IS", "WAS").
+    S2S("{tag0}", "'very long substring'").
+    StrToInt("{tag1}", int64(1234567890)).
+    S2F("tag2", float64(154.195628217573)).
+    S2S("#s", "etc...").
     Commit()
 fmt.Println(res == expectStr) // true
 ```
@@ -27,8 +27,9 @@ fmt.Println(res == expectStr) // true
 ## Benchmarks
 
 ```
-BenchmarkBatchReplace_Replace-8             1613643       755 ns/op       0 B/op       0 allocs/op
-BenchmarkBatchReplaceNative_Replace-8       1584399       713 ns/op     304 B/op       6 allocs/op
-BenchmarkBatchReplaceStr_Replace-8          1488924       791 ns/op       0 B/op       0 allocs/op
-BenchmarkBatchReplaceStrNative_Replace-8    1363946       840 ns/op     544 B/op      10 allocs/op
+BenchmarkBatchReplace/b2x-8         	 1566085	       742.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBatchReplace/b2x_native-8  	 1570418	       729.9 ns/op	     288 B/op	       6 allocs/op
+BenchmarkBatchReplace/s2x-8         	 1543791	       776.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBatchReplace/s2x_native-8  	 1707190	       721.6 ns/op	     288 B/op	       6 allocs/op
+BenchmarkBatchReplace/no_alloc-8    	 2998296	       409.1 ns/op	       0 B/op	       0 allocs/op
 ```
