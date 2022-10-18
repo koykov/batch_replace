@@ -1,0 +1,4 @@
+github.com/koykov/bytealg v1.0.1 h1:WlD9/4PMThmfQuIRVpVCujzM/3AVTEwlgvaYrErO9Nk=
+github.com/koykov/bytealg v1.0.1/go.mod h1:kMvejxwPkAt7YfHpB1PQ/utMwKpHSY54u1rCxna6Wvg=
+github.com/koykov/fastconv v1.0.0 h1:WnsCYcrrQkUWEKK4VbVX7BuGb6jFhE8Q0Ebl3eAkHic=
+github.com/koykov/fastconv v1.0.0/go.mod h1:Y7I12pumAx+2iH1Yh0X85UpywP7IET/+M7S17toJBes=
