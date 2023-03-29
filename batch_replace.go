@@ -251,6 +251,9 @@ func (r *BatchReplace) replaceTo(dst, s, old, new []byte, n int) []byte {
 	start := 0
 	for i := 0; i < n; i++ {
 		j := start + bytes.Index(s[start:], old)
+		if j == -1 {
+			continue
+		}
 		dst = append(dst, s[start:j]...)
 		dst = append(dst, new...)
 		start = j + len(old)
