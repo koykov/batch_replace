@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/koykov/bytealg"
+	"github.com/koykov/byteseq"
 	"github.com/koykov/fastconv"
 )
 
@@ -34,30 +35,45 @@ type BatchReplace struct {
 }
 
 // NewBatchReplace inits new replacer.
-func NewBatchReplace(s []byte) *BatchReplace {
+func NewBatchReplace[T byteseq.Byteseq](x T) *BatchReplace {
+	s := byteseq.Q2B(x)
 	o := queue{queue: make([]byteptrn, 0)}
 	n := queue{queue: make([]byteptrn, 0)}
 	r := BatchReplace{
 		old: o,
 		new: n,
 	}
-	r.SetSrcBytes(s)
+	r.SetSource(s)
 	return &r
 }
 
-// SetSrcBytes set the source as bytes.
+// SetSource set the source as bytes.
 //
 // For use outside of pools.
-func (r *BatchReplace) SetSrcBytes(src []byte) *BatchReplace {
+func (r *BatchReplace) SetSource(src []byte) *BatchReplace {
 	r.buf = append(r.buf[:0], src...)
 	r.src.set(r.off, len(src))
 	r.off = len(src)
 	return r
 }
 
+// SetSourceString set the source as string.
+func (r *BatchReplace) SetSourceString(src string) *BatchReplace {
+	return r.SetSource(fastconv.S2B(src))
+}
+
+// SetSrcBytes set the source as bytes.
+//
+// For use outside of pools.
+// Deprecated: use SetSource() instead.
+func (r *BatchReplace) SetSrcBytes(src []byte) *BatchReplace {
+	return r.SetSource(src)
+}
+
 // SetSrcStr set the source as string.
+// Deprecated: use SetSourceString() instead.
 func (r *BatchReplace) SetSrcStr(src string) *BatchReplace {
-	return r.SetSrcBytes(fastconv.S2B(src))
+	return r.SetSourceString(src)
 }
 
 // BytesToBytes registers new bytes to bytes replacement.

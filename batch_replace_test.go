@@ -42,8 +42,7 @@ func TestBatchReplace(t *testing.T) {
 		}
 	})
 	t.Run("s2x", func(t *testing.T) {
-		n := NewBatchReplace(nil).
-			SetSrcStr("foo {tag0} bar {tag1} string {macro} with {cnt} tags").
+		n := NewBatchReplace("foo {tag0} bar {tag1} string {macro} with {cnt} tags").
 			StrToStr("{tag0}", "s0").
 			StrToStr("{tag1}", "long string").
 			StrToFloat("{macro}", 1234567.0987654321).
@@ -59,7 +58,7 @@ func BenchmarkBatchReplace(b *testing.B) {
 	b.Run("b2x", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			r := AcquireWithBytesSrc(breplOrigin)
+			r := AcquireWithSource(breplOrigin)
 			n := r.BytesToBytes(brTag0, brTag0Val).
 				BytesToBytes(brTag1, brTag1Val).
 				BytesToFloat(brTag2, 1234567.0987654321).
@@ -86,7 +85,7 @@ func BenchmarkBatchReplace(b *testing.B) {
 	b.Run("s2x", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			r := AcquireWithStrSrc(breplOriginS)
+			r := AcquireWithSource(breplOriginS)
 			n := r.StrToStr(brTag0S, brTag0ValS).
 				StrToStr(brTag1S, brTag1ValS).
 				StrToFloat(brTag2S, 1234567.0987654321).
@@ -113,7 +112,7 @@ func BenchmarkBatchReplace(b *testing.B) {
 	b.Run("no alloc", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			r := AcquireWithStrSrc(breplAllocS)
+			r := AcquireWithSource(breplAllocS)
 			n := r.StrToStr("!user", "John Ruth").
 				StrToStr("!val", "8000").
 				StrToStr("!cur", "USD").

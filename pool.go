@@ -3,6 +3,7 @@ package batch_replace
 import (
 	"sync"
 
+	"github.com/koykov/byteseq"
 	"github.com/koykov/fastconv"
 )
 
@@ -25,7 +26,7 @@ func (p *Pool) Get(src []byte) *BatchReplace {
 	if v != nil {
 		if r, ok := v.(*BatchReplace); ok {
 			if len(src) > 0 {
-				r.SetSrcBytes(src)
+				r.SetSource(src)
 			}
 			return r
 		}
@@ -47,12 +48,21 @@ func Acquire() *BatchReplace {
 	return p.Get(nil)
 }
 
+// AcquireWithSource gets replace from default pool and sets source for replacements.
+func AcquireWithSource[T byteseq.Byteseq](x T) *BatchReplace {
+	b := byteseq.Q2B(x)
+	br := p.Get(b)
+	return br
+}
+
 // AcquireWithBytesSrc gets replacer from default pool and set byte array as a source.
+// Deprecated: use AcquireWithSource() instead.
 func AcquireWithBytesSrc(src []byte) *BatchReplace {
 	return p.Get(src)
 }
 
 // AcquireWithStrSrc gets replacer from default pool and set string as a source.
+// Deprecated: use AcquireWithSource() instead.
 func AcquireWithStrSrc(src string) *BatchReplace {
 	return p.Get(fastconv.S2B(src))
 }
