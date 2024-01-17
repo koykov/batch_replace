@@ -3,8 +3,8 @@ package batch_replace
 import (
 	"sync"
 
+	"github.com/koykov/byteconv"
 	"github.com/koykov/byteseq"
-	"github.com/koykov/fastconv"
 )
 
 // Pool to store batch replacers.
@@ -64,7 +64,7 @@ func AcquireWithBytesSrc(src []byte) *BatchReplace {
 // AcquireWithStrSrc gets replacer from default pool and set string as a source.
 // Deprecated: use AcquireWithSource() instead.
 func AcquireWithStrSrc(src string) *BatchReplace {
-	return p.Get(fastconv.S2B(src))
+	return p.Get(byteconv.S2B(src))
 }
 
 // Release puts replacer back to default pool.
