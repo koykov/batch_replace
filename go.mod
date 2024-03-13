@@ -7,4 +7,4 @@ require (
 	github.com/koykov/byteconv v1.0.0
 )
 
-require github.com/koykov/byteseq v1.0.0
+require github.com/koykov/byteseq v1.0.1
