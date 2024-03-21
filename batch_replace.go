@@ -36,14 +36,20 @@ type BatchReplace struct {
 
 // NewBatchReplace inits new replacer.
 func NewBatchReplace[T byteseq.Byteseq](x T) *BatchReplace {
-	s := byteseq.Q2B(x)
+	var src []byte
+	if b, ok := byteseq.ToBytes(x); ok {
+		src = b
+	}
+	if s, ok := byteseq.ToString(x); ok {
+		src = byteconv.S2B(s)
+	}
 	o := queue{queue: make([]byteptrn, 0)}
 	n := queue{queue: make([]byteptrn, 0)}
 	r := BatchReplace{
 		old: o,
 		new: n,
 	}
-	r.SetSource(s)
+	r.SetSource(src)
 	return &r
 }
 

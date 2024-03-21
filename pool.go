@@ -43,15 +43,21 @@ func (p *Pool) Put(r *BatchReplace) {
 // Acquire gets replacer from default pool.
 //
 // Please note, this method doesn't provide source for replacer and you need to specify it manually by calling
-// SetSrcBytes() and SetSrcStr() methods.
+// SetSource() method.
 func Acquire() *BatchReplace {
 	return p.Get(nil)
 }
 
 // AcquireWithSource gets replace from default pool and sets source for replacements.
 func AcquireWithSource[T byteseq.Byteseq](x T) *BatchReplace {
-	b := byteseq.Q2B(x)
-	br := p.Get(b)
+	var src []byte
+	if b, ok := byteseq.ToBytes(x); ok {
+		src = b
+	}
+	if s, ok := byteseq.ToString(x); ok {
+		src = byteconv.S2B(s)
+	}
+	br := p.Get(src)
 	return br
 }
 
