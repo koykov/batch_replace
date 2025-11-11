@@ -43,11 +43,11 @@ func TestBatchReplace(t *testing.T) {
 	})
 	t.Run("s2x", func(t *testing.T) {
 		n := NewBatchReplace("foo {tag0} bar {tag1} string {macro} with {cnt} tags").
-			StrToStr("{tag0}", "s0").
-			StrToStr("{tag1}", "long string").
-			StrToFloat("{macro}", 1234567.0987654321).
-			StrToInt("{cnt}", int64(4)).
-			CommitStr()
+			StringToString("{tag0}", "s0").
+			StringToString("{tag1}", "long string").
+			StringToFloat("{macro}", 1234567.0987654321).
+			StringToInt("{cnt}", int64(4)).
+			CommitString()
 		if n != breplExpectS {
 			t.Error("BatchReplace: mismatch string result and expectation")
 		}
@@ -73,10 +73,10 @@ func BenchmarkBatchReplace(b *testing.B) {
 	b.Run("b2x native", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			n := bytes.Replace(breplOrigin, brTag0, brTag0Val, -1)
-			n = bytes.Replace(n, brTag1, brTag1Val, -1)
-			n = bytes.Replace(n, brTag2, []byte(strconv.FormatFloat(1234567.0987654321, 'f', -1, 64)), -1)
-			n = bytes.Replace(n, brTag3, []byte(strconv.Itoa(4)), -1)
+			n := bytes.ReplaceAll(breplOrigin, brTag0, brTag0Val)
+			n = bytes.ReplaceAll(n, brTag1, brTag1Val)
+			n = bytes.ReplaceAll(n, brTag2, []byte(strconv.FormatFloat(1234567.0987654321, 'f', -1, 64)))
+			n = bytes.ReplaceAll(n, brTag3, []byte(strconv.Itoa(4)))
 			if !bytes.Equal(n, breplExpect) {
 				b.Error("BatchReplace: mismatch result and expectation")
 			}
@@ -86,11 +86,11 @@ func BenchmarkBatchReplace(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			r := AcquireWithSource(breplOriginS)
-			n := r.StrToStr(brTag0S, brTag0ValS).
-				StrToStr(brTag1S, brTag1ValS).
-				StrToFloat(brTag2S, 1234567.0987654321).
-				StrToInt(brTag3S, int64(4)).
-				CommitStr()
+			n := r.StringToString(brTag0S, brTag0ValS).
+				StringToString(brTag1S, brTag1ValS).
+				StringToFloat(brTag2S, 1234567.0987654321).
+				StringToInt(brTag3S, int64(4)).
+				CommitString()
 			if n != breplExpectS {
 				b.Error("BatchReplace: mismatch string result and expectation")
 			}
@@ -100,10 +100,10 @@ func BenchmarkBatchReplace(b *testing.B) {
 	b.Run("s2x native", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			n := strings.Replace(breplOriginS, brTag0S, brTag0ValS, -1)
-			n = strings.Replace(n, brTag1S, brTag1ValS, -1)
-			n = strings.Replace(n, brTag2S, strconv.FormatFloat(1234567.0987654321, 'f', -1, 64), -1)
-			n = strings.Replace(n, brTag3S, strconv.Itoa(4), -1)
+			n := strings.ReplaceAll(breplOriginS, brTag0S, brTag0ValS)
+			n = strings.ReplaceAll(n, brTag1S, brTag1ValS)
+			n = strings.ReplaceAll(n, brTag2S, strconv.FormatFloat(1234567.0987654321, 'f', -1, 64))
+			n = strings.ReplaceAll(n, brTag3S, strconv.Itoa(4))
 			if n != breplExpectS {
 				b.Error("BatchReplaceStr: mismatch result and expectation")
 			}
@@ -113,10 +113,10 @@ func BenchmarkBatchReplace(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			r := AcquireWithSource(breplAllocS)
-			n := r.StrToStr("!user", "John Ruth").
-				StrToStr("!val", "8000").
-				StrToStr("!cur", "USD").
-				CommitStr()
+			n := r.StringToString("!user", "John Ruth").
+				StringToString("!val", "8000").
+				StringToString("!cur", "USD").
+				CommitString()
 			if n != "Balance of John Ruth: 8000 USD" {
 				b.Error("BatchReplace + avoid alloc: mismatch string result and expectation")
 			}
