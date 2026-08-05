@@ -200,12 +200,11 @@ func (r *BatchReplace) StringToFloatTunable(old string, new float64, fmt byte, p
 func (r *BatchReplace) Commit() []byte {
 	// Calculate final length.
 	bl := r.src.len() + r.new.acc
-	l := bl - r.old.acc
 
 	r.buf = bytealg.GrowDelta(r.buf, r.off+bl*2)
 	r.dst.set(r.off, bl)
 	dst := r.indirect(r.dst)
-	copy(dst, r.indirect(r.src))
+	dst = append(dst[:0], r.indirect(r.src)...)
 	r.off += bl
 	buf := r.buf[r.off:]
 	// Walk over queue and replace.
@@ -216,7 +215,7 @@ func (r *BatchReplace) Commit() []byte {
 		dst = append(dst[:0], buf...)
 	}
 
-	return r.indirect(r.dst)[:l]
+	return dst
 }
 
 // CommitCopy perform the replaces and return copy of result.
